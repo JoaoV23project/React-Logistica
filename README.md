@@ -1,3 +1,3 @@
 ﻿#Aplicativo de logística
 
-Essa apicação tem como objetivo solucionar o problema logístico de uma empresa
+Essa aplicação tem como objetivo solucionar o problema logístico de uma empresa

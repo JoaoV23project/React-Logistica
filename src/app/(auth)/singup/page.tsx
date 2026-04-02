@@ -17,6 +17,13 @@ export default function SingUp() {
         const { data, error } = await supabase.auth.signUp({
             email: email,
             password: pass,
+            options: {
+                data: {
+                    name: name,
+                    email: email,
+                    password: pass,
+                },
+            },
         })
         if(error){
             Alert.alert(`Error ${error.message}`);
@@ -85,7 +92,9 @@ export default function SingUp() {
                         <Pressable
                             style={styles.button}
                             onPress={handleSingUp}>
-                            <Text style={styles.buttonText}>Cadastrar</Text>
+                            <Text style={styles.buttonText}>
+                                {loading ? 'Carregando...' : 'Cadastrar'}
+                            </Text>
                         </Pressable>
 
                     </View>

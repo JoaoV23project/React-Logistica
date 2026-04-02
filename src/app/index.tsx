@@ -18,12 +18,20 @@ export default function Login() {
     const [pass, setPass] = useState('');
     const [loading, setLoading] = useState(false);
 
-    function handleLogin() {
-        console.log({
-            email,
-            pass,
-            loading,
+    async function handleLogin() {
+        setLoading(true);
+        const {data, error} = await supabase.auth.signInWithPassword({
+            email: email,
+            password: pass
         })
+
+        if(error){
+            Alert.alert(`Error ${error.message}`);
+            setLoading(false);
+            return;
+        }
+        setLoading(false);
+        router.replace('/(panel)/profile/page');
     }
 
     return (
@@ -66,7 +74,9 @@ export default function Login() {
                         style={styles.button}
                         onPress={handleLogin}
                         >
-                            <Text style={styles.buttonText}>Acessar</Text>
+                            <Text style={styles.buttonText}>
+                                {loading ? 'Carregando...' : 'Acessar'}
+                            </Text>
                         </Pressable>
 
                         <Link

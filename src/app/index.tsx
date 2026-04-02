@@ -1,50 +1,83 @@
 import colors from "@/constants/colors";
-import { Link } from "expo-router";
-import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
+import { Link, router } from "expo-router";
+import { useState } from "react";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    Pressable,
+    ScrollView,
+    Alert
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { supabase } from "../lib/supabase";
 
-export default function Login(){
-    return(
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.logoText}>
-                    Logística<Text style={{color: colors.green}}>App</Text>
-                </Text>
+export default function Login() {
+    const [email, setEmail] = useState('');
+    const [pass, setPass] = useState('');
+    const [loading, setLoading] = useState(false);
 
-                <Text style={styles.slogan}>
-                    O futuro do rastreamento
-                </Text>
+    function handleLogin() {
+        console.log({
+            email,
+            pass,
+            loading,
+        })
+    }
 
-            </View>
-            <View style={styles.form}>
-                <View>
-                    <Text style={styles.label}>Email</Text>
-                    <TextInput
-                    placeholder='Digite seu email...'
-                    style={styles.input}
-                    />
+    return (
+        <SafeAreaView style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1, backgroundColor: colors.white }}>
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <Text style={styles.logoText}>
+                            Logística<Text style={{ color: colors.green }}>App</Text>
+                        </Text>
+
+                        <Text style={styles.slogan}>
+                            O futuro do rastreamento
+                        </Text>
+
+                    </View>
+                    <View style={styles.form}>
+                        <View>
+                            <Text style={styles.label}>Email</Text>
+                            <TextInput
+                                placeholder='Digite seu email...'
+                                style={styles.input}
+                                value={email}
+                                onChangeText={setEmail}
+                            />
+                        </View>
+
+                        <View>
+                            <Text style={styles.label}>Senha</Text>
+                            <TextInput
+                                placeholder='Digite sua senha...'
+                                style={styles.input}
+                                secureTextEntry
+                                value={pass}
+                                onChangeText={setPass}
+                            />
+                        </View>
+
+                        <Pressable
+                        style={styles.button}
+                        onPress={handleLogin}
+                        >
+                            <Text style={styles.buttonText}>Acessar</Text>
+                        </Pressable>
+
+                        <Link
+                            href='/(auth)/singup/page'
+                            style={styles.link}>
+                            <Text>Ainda não possui uma conta? Cadastre-se</Text>
+                        </Link>
+                    </View>
                 </View>
-                
-                <View>
-                    <Text style={styles.label}>Senha</Text>
-                    <TextInput
-                    placeholder='Digite sua senha...'
-                    style={styles.input}
-                    secureTextEntry
-                    />
-                </View>
-
-                <Pressable style={styles.button}>
-                    <Text style={styles.buttonText}>Acessar</Text>
-                </Pressable>
-
-                <Link 
-                href='/(auth)/singup/page'
-                style={styles.link}>
-                    <Text>Ainda não possui uma conta? Cadastre-se</Text>
-                </Link>
-
-            </View>
-        </View>
+            </ScrollView>
+        </SafeAreaView >
     );
 }
 const styles = StyleSheet.create({
@@ -97,8 +130,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     buttonText: {
-            color: colors.white,
-            fontWeight: 'bold'
+        color: colors.white,
+        fontWeight: 'bold'
     },
     link: {
         marginTop: 16,

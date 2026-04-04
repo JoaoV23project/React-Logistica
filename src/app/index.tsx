@@ -46,7 +46,6 @@ export default function Login() {
                         <Text style={styles.slogan}>
                             O futuro do rastreamento
                         </Text>
-
                     </View>
                     <View style={styles.form}>
                         <View>

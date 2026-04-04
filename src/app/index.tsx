@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
+import { positionStyle, showMessage } from "react-native-flash-message";
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -20,13 +21,13 @@ export default function Login() {
 
     async function handleLogin() {
         setLoading(true);
-        const {data, error} = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: pass
         })
 
-        if(error){
-            Alert.alert(`Error ${error.message}`);
+        if (error) {
+            Alert.alert(`Error: ${error.message.toUpperCase()}`);
             setLoading(false);
             return;
         }
@@ -70,8 +71,8 @@ export default function Login() {
                         </View>
 
                         <Pressable
-                        style={styles.button}
-                        onPress={handleLogin}
+                            style={styles.button}
+                            onPress={handleLogin}
                         >
                             <Text style={styles.buttonText}>
                                 {loading ? 'Carregando...' : 'Acessar'}

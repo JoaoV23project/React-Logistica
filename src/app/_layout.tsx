@@ -14,17 +14,6 @@ export default function RootLayoult(){
 function MainLayoult(){
   const { setAuth } = useAuth();
 
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if(session){
-        setAuth(session.user)
-        router.replace('/(panel)/profile/page');
-        return;
-      }
-      setAuth(null);
-      router.replace('/');
-    })
-  }, [])
   return(
     <Stack>
       <Stack.Screen

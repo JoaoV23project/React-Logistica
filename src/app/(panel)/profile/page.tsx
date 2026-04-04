@@ -1,7 +1,9 @@
 import colors from "@/constants/colors";
 import { supabase } from "@/src/lib/supabase";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Button, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
@@ -17,15 +19,55 @@ export default function Profile() {
         }
     };
 
+    const deletePedido = async (id: number) => {
+        const { error } = await supabase.from('produtos').delete().match({ id });
+
+        if (error) {
+            console.error(error);
+        } else {
+            await fetchTasks();
+        }
+    };
+
+        const cancelarPedido = async (id: number) => {
+        const { error } = await supabase.from('produtos').update({etapa: 'Pedido cancelado ❌'}).match({ id });
+
+        if (error) {
+            console.error(error);
+        } else {
+            await fetchTasks();
+        }
+    };
+
+    const comprarNovamente = async (nome: String, id: number) => {
+        const { error } = await supabase.from('produtos').insert({nomeProduto: nome, etapa: 'Análise de estoque 📦'});
+
+        if (error) {
+            console.error(error);
+        } else {
+            deletePedido(id);
+            await fetchTasks();
+        }
+    };
+
+
     useEffect(() => {
         fetchTasks();
     }, []);
-
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <ScrollView style={{ flex: 1, backgroundColor: colors.white }}>
                 <View style={styles.container}>
                     <View style={styles.header}>
+                        <Pressable
+                            style={styles.backButton}
+                            onPress={() => { router.replace('/') }}>
+                            <Ionicons
+                                name="arrow-back"
+                                size={24}
+                                color={colors.white}
+                            />
+                        </Pressable>
                         <Text style={styles.logoText}>
                             Logística<Text style={{ color: colors.green }}>App</Text>
                         </Text>
@@ -38,7 +80,21 @@ export default function Profile() {
                 {produtos.map((produto) => (
                     <View style={styles.produto} key={produto.id}>
                         <Text style={[styles.textProduto]}>
-                            Nome: {produto.nomeProduto}     Quantidade: {produto.quantidade}        Etapa: {produto.etapa}
+                            Nome: {produto.nomeProduto}{'\n'}
+                            Quantidade: {produto.quantidade}{'\n'}
+                            Etapa: {produto.etapa}{'\n'}
+                            {produto.etapa == 'Produto esgotado ❌' ||
+                            produto.etapa == 'Pagamento não validado ❌' ||
+                            produto.etapa == 'Pedido cancelado ❌' ||
+                            produto.etapa == 'Nota Fiscal Denegada ❌' ||
+                            produto.etapa == 'Pedido devolvido ❌' ||
+                            produto.etapa == 'Pedido Entregue ✅'
+                            ?<Button title="Excluir" onPress={() =>
+                            deletePedido(produto.id)} color={'#d10101'} />:
+                            <View style={styles.buttons}>
+                                <Button title="Cancelar" onPress={() => cancelarPedido(produto.id)} color={'#ffa600'}/>
+                                <Button title="Comprar novamente" onPress={() => comprarNovamente(produto.nomeProduto, produto.id)} color={'#13e400'}/>
+                            </View>}
                         </Text>
                     </View>
                 ))}
@@ -67,28 +123,38 @@ const styles = StyleSheet.create({
         marginBottom: 34,
     },
     produto: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 15,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: 40,
+        margin: 20,
+        backgroundColor: "#b0e4cc25",
+        borderRadius: 15,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 7,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        elevation: 5,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  textProduto: {
-    flex: 1,
-    fontSize: 18,
-  },
-  completed: {
-    textDecorationLine: "line-through",
-    color: "#888",
-  },
+    textProduto: {
+        flex: 1,
+        fontSize: 30,
+        lineHeight: 50,
+        fontWeight: 'bold'
+    },
+     backButton: {
+        backgroundColor: 'rgba(255, 255, 255, 0.55',
+        alignSelf: 'flex-start',
+        padding: 8,
+        borderRadius: 8,
+        marginBottom: 8,
+    },
+    buttons: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 100,
+    }
 });
